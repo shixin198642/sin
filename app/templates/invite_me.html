@@ -1,0 +1,33 @@
+{% extends "userbase.html" %}
+{% load url from future %}
+
+{% block content %}
+<div class="container" style="padding-bottom:18px">
+
+  <div class="hero-unit">
+    <h1>Dataganic</h1>
+    <p>Leave your information here, we will send your an invitation when we have more capacities.</p>
+    <form method="post">
+    <div class="row">
+      <div class="span3 columns" style="margin-bottom:10px">
+        {{ form.email.label_tag }}
+      </div>
+      <div class="span8 columns">
+        {{ form.email }} {% if form.errors.email %}{{ form.errors.email }}{% endif %}
+      </div>
+    </div>
+    <div class="row">
+      <div class="span3 columns">
+        {# form.description.label_tag #} 
+        <label for="id_description">Description of your project</label>
+      </div>
+      <div class="span8 columns">
+        {{ form.description }} {% if form.errors.description %}{{ form.errors.description }}{% endif %}
+      </div>
+    </div>
+
+    <input style="margin-left:10px;margin-top:20px;float:right;" type="submit" class="btn primary" value="Invite Me!" />
+    </form>
+  </div>
+</div>
+{% endblock %}

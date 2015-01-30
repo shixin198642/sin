@@ -1,0 +1,13 @@
+{% load i18n %}{% load url from future %}{% autoescape off %}
+{% blocktrans %}You're receiving this e-mail because you requested us to send you an invitation when we have more capacities on Dataganic.com.{% endblocktrans %}
+
+{% trans "Please go to the following page to register your account:" %}
+{% block invitation_link %}
+http://www.dataganic.com/register?email={{ email|urlencode }}&key={{ invite_key|urlencode }}
+{% endblock %}
+
+{% trans "Thanks for your business!" %}
+
+{% blocktrans %}The Dataganic team{% endblocktrans %}
+
+{% endautoescape %}

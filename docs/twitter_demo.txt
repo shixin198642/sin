@@ -1,0 +1,78 @@
+# 
+# File: docs/twitter_demo.txt
+# 
+
+Here are the steps to run Twitter demo:
+
+1. Make sure that the latest Sensei Python client is installed on your
+   machine:
+
+     $ cd $SENSEI/clients/python
+     $ sudo python setup.py install
+
+2. Make sure both ZooKeeper and Kafka are running on your machine.  If
+   not, start them using the following commands respectively:
+
+     $ $ZOOKEEPER/bin/zkServer.sh start         // Start ZooKeeper
+
+     $ cd $KAFKA                                // Start Kafka
+     $ bin/kafka-server-start.sh config/server.properties
+
+3. Start Sin with a fresh database:
+
+     $ rm -fr /tmp/sin
+     $ cd $SIN/app
+     $ manage.py syncdb         // Make sure you answer "yes" to create a
+                                // super user (e.g. "bcui") ; also
+                                // remember your password (e.g. "aaa")
+     $ sin_server.py -c         // Reset all registered nodes
+     $ sin_server.py            // Start Sin server  
+
+4. Start Sin agent (for node 0):
+
+     $ cd $SIN/app/agent
+     $ ./sin_agent 0
+
+5. Start Sin shell, create and start a table called "tweet":
+
+     $ cd $SIN
+     $ shell/sin_shell.sh -u bcui -p aaa
+     bql> help
+     bql> create table tweet (name string, screen_name string, user_id long, time long, hashtags string, mentions string, contents text index analyzed termvector no) uid field = id_str with facets(name simple, user_id simple, screen_name simple, time range, hashtags multi, mentions multi, timeRange dynamicTimeRange depends time dynamic true params ("range":"000000100", "range":"000010000", "range":"001000000"))
+     bql> start tweet
+
+6. Now, open another terminal, type in the following commands to start
+   retrieving/indexing tweets (note that option ``-a'' of sin_shell.sh
+   is the table name to which you are going to add docs in batch-mode):
+
+     $ cd $SIN
+     $ curl https://stream.twitter.com/1/statuses/sample.json -ubcui:<password> | shell/tweet_filter.py | shell/sin_shell.sh -u bcui -p aaa -a tweet
+
+7. Go back to the Sin shell to try some SELECTs:
+
+     bql> select screen_name, time from tweet where time in last 10 secs
+     +----------------+------------------------------------------+
+     | screen_name    | time                                     |
+     +----------------+------------------------------------------+
+     | BernardArabo   | 0000000000000000000000000001331450072854 |
+     | vikhadevika    | 0000000000000000000000000001331450072860 |
+     | footballkerala | 0000000000000000000000000001331450072862 |
+     | hibaxaxivy     | 0000000000000000000000000001331450072856 |
+     | green1910326   | 0000000000000000000000000001331450072868 |
+     | arthur_0913    | 0000000000000000000000000001331450072882 |
+     | _ItS_Ty_BiSh   | 0000000000000000000000000001331450072861 |
+     | Tyler_SK       | 0000000000000000000000000001331450072873 |
+     | bocil_amel     | 0000000000000000000000000001331450072870 |
+     | ScissorL0VE    | 0000000000000000000000000001331450072874 |
+     +----------------+------------------------------------------+
+     10 rows in set, 143 hits, 2316 total docs (server: 57ms, total: 156ms)
+
+8. Once you are done with the demo, you can cancel the commands to
+   retrieve/index tweets, and optionally stop and/or drop the tweet
+   table:
+
+     bql> stop tweet
+     bql> drop table tweet      // or "truncate table tweet"
+
+9. That's it for now!
+

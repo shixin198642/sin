@@ -1,0 +1,126 @@
+{% load url from future %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+ <head>
+	<title>Dataganic - search as service</title>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+	<script src="{{ STATIC_URL }}js/app.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/main.css" type="text/css" media="screen" title="no title" charset="utf-8"> 
+  <link href="site/css/bootstrap.min.css" rel="stylesheet">
+  <link href="site/css/site.css" rel="stylesheet">
+  <style type="text/css">
+    /* Override some defaults */
+    html, body {
+      background-color: #eee;
+    }
+    body {
+      padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+    }
+    .container > footer p {
+      text-align: center; /* center align it with the container */
+    }
+    .container {
+      width: 820px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
+    }
+
+    /* The white background content wrapper */
+    .content {
+      background-color: #fff;
+      padding: 20px;
+      margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+      -webkit-border-radius: 0 0 6px 6px;
+         -moz-border-radius: 0 0 6px 6px;
+              border-radius: 0 0 6px 6px;
+      -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+         -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+              box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    }
+
+    /* Page header tweaks */
+    .page-header {
+      background-color: #f5f5f5;
+      padding: 20px 20px 10px;
+      margin: -20px -20px 20px;
+    }
+
+    /* Styles you shouldn't keep as they are for displaying this base example only */
+    .content .span10,
+    .content .span4 {
+      min-height: 500px;
+    }
+    /* Give a quick and non-cross-browser friendly divider */
+    .content .span4 {
+      margin-left: 0;
+      padding-left: 19px;
+      border-left: 1px solid #eee;
+    }
+
+    .topbar .btn {
+      border: 0;
+    }
+
+    #dash-link, #login-panel, #logout-panel {
+      display: none;
+    }
+
+    #logout-panel {
+      float: right;
+      color: #BFBFBF;
+    }
+  </style>
+	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/core.js" ></script>
+  <script type="text/javascript">
+    $.getJSON('/me', function(obj) {
+      if (obj.is_authenticated) {
+        $('.authenticated').show();
+        $('#dash-link').show();
+        $('#username').text(obj.username);
+        $('#logout-panel').show();
+      }
+      else {
+        $('.anonymous').show();
+        $.get('/login', function(data) {
+          $('#login-panel').show();
+        });
+      }
+    });
+  </script>
+</head>
+
+  <body> 
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="/">Dataganic</a>
+          <ul class="nav">
+            <li id="home"><a href="/site/index.html">Home</a></li>
+            <li id="dash-link"><a href="/mydash">Dashboard</a></li>
+            <li><a href="/site/gettingStarted.html">Getting Started</a></li>
+            <li><a href="/site/api.html">API</a></li>
+            <li id="privacy"><a href="/site/privacy.html">Privacy</a></li>
+            <li id="tos"><a href="/site/tos.html">ToS</a></li>
+          </ul>
+          <div id="login-panel">
+            <form action="/login" method="post" class="pull-right">
+              <input class="input-small" name="username" type="text" placeholder="Username">
+              <input class="input-small" name="password" type="password" placeholder="Password">
+              <button class="btn" type="submit">Sign in</button>
+              <button class="btn" type="button" onclick="location='/register'">Register</button>
+            </form>
+          </div>
+          <div id="logout-panel" class="">
+            Welcome, <a href="/password_change" id="username"></a>! | <a href="/logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% block active_tab %}
+  {% endblock %}
+  {% block content %}
+  {% endblock %}
+  <div class="container" style="text-align: center;">
+    <p>&copy; Dataganic.com 2011</p>
+  </div>
+  </body> 
+</html> 
