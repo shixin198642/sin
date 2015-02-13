@@ -6,3 +6,4 @@ dist
 TAGS
 cscope.*
 *.pyc
+.idea/
